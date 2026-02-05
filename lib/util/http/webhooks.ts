@@ -154,15 +154,21 @@ export async function notifyWebhooks(
   platformName: string,
   eventType: WebhookEventType,
 ): Promise<void> {
+  logger.debug(
+    { prWebhooks: config.prWebhooks, pr: pr.number, eventType },
+    'notifyWebhooks called',
+  );
+
   const webhookUrls = config.prWebhooks;
 
   if (!webhookUrls || webhookUrls.length === 0) {
+    logger.debug('No webhook URLs configured, skipping notifications');
     return;
   }
 
   const payload = buildWebhookPayload(config, pr, platformName, eventType);
 
-  logger.debug(
+  logger.info(
     { webhookUrls, event: eventType, pr: pr.number },
     'Sending webhook notifications',
   );

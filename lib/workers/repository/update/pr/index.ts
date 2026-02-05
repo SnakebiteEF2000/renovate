@@ -498,8 +498,20 @@ export async function ensurePr(
         setPrCache(branchName, prBodyFingerprint, true);
 
         // Send webhook notifications for PR update
+        logger.debug(
+          {
+            hasWebhooks: !!config.prWebhooks?.length,
+            webhookCount: config.prWebhooks?.length ?? 0,
+            isDryRun: GlobalConfig.get('dryRun'),
+          },
+          'Webhook notification check for PR update',
+        );
         if (config.prWebhooks?.length && !GlobalConfig.get('dryRun')) {
-          const platformName = GlobalConfig.get('platform') || 'unknown';
+          const platformName = GlobalConfig.get('platform') ?? 'unknown';
+          logger.debug(
+            { webhooks: config.prWebhooks, pr: existingPr.number },
+            'Sending webhook notifications for PR update',
+          );
           notifyWebhooks(
             config,
             existingPr,
@@ -557,9 +569,22 @@ export async function ensurePr(
         logger.info({ pr: pr?.number, prTitle }, 'PR created');
 
         // Send webhook notifications for PR creation
+        logger.debug(
+          {
+            hasWebhooks: !!config.prWebhooks?.length,
+            webhookCount: config.prWebhooks?.length ?? 0,
+            isDryRun: GlobalConfig.get('dryRun'),
+            hasPr: !!pr,
+          },
+          'Webhook notification check',
+        );
         if (pr && config.prWebhooks?.length && !GlobalConfig.get('dryRun')) {
-          const platformName = GlobalConfig.get('platform') || 'unknown';
+          const platformName = GlobalConfig.get('platform') ?? 'unknown';
           const createdPr = pr;
+          logger.debug(
+            { webhooks: config.prWebhooks, pr: createdPr.number },
+            'Sending webhook notifications for PR creation',
+          );
           notifyWebhooks(
             config,
             createdPr,
