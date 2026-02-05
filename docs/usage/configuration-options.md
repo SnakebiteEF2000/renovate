@@ -4224,6 +4224,31 @@ These scenarios include if a `baseBranch` or if there is a grouped update and ei
 
 Using this option allows you to skip these default behaviors and use other templating methods to control the format of the PR title.
 
+## prWebhooks
+
+Webhook URLs to notify when pull requests are created or updated.
+
+Renovate will send HTTP POST requests to these URLs with a JSON payload containing information about the PR, upgrades, and repository.
+This is useful for integrating Renovate with external systems, monitoring tools, or custom automation workflows.
+
+Configure authentication for webhook endpoints using `hostRules`.
+
+Example:
+
+```json
+{
+  "prWebhooks": ["https://webhook.example.com/renovate"],
+  "hostRules": [
+    {
+      "matchHost": "webhook.example.com",
+      "headers": {
+        "Authorization": "Bearer token123"
+      }
+    }
+  ]
+}
+```
+
 ## printConfig
 
 This option is useful for troubleshooting, particularly if using presets.
