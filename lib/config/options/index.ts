@@ -3303,7 +3303,6 @@ const options: Readonly<RenovateOptions>[] = [
       'Webhook URLs to notify when pull requests are created or updated.',
     type: 'array',
     subType: 'string',
-    stage: 'repository',
     default: [],
     cli: false,
     mergeable: true,
