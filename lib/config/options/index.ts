@@ -3298,6 +3298,17 @@ const options: Readonly<RenovateOptions>[] = [
     globalOnly: true,
   },
   {
+    name: 'prWebhooks',
+    description:
+      'Webhook URLs to notify when pull requests are created or updated.',
+    type: 'array',
+    subType: 'string',
+    stage: 'repository',
+    default: [],
+    cli: false,
+    mergeable: true,
+  },
+  {
     name: 'dockerMaxPages',
     description:
       'By default, Renovate fetches up to 20 pages of Docker tags from registries. But you can set your own limit with this config option.',

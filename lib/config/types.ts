@@ -130,6 +130,7 @@ export interface RenovateSharedConfig {
   prPriority?: number;
   prTitle?: string;
   prTitleStrict?: boolean;
+  prWebhooks?: string[];
   productLinks?: Record<string, string>;
   pruneBranchAfterAutomerge?: boolean;
   rangeStrategy?: RangeStrategy;

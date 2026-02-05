@@ -26,6 +26,7 @@ import { getElapsedHours } from '../../../../util/date.ts';
 import { stripEmojis } from '../../../../util/emoji.ts';
 import { fingerprint } from '../../../../util/fingerprint.ts';
 import { getBranchLastCommitTime } from '../../../../util/git/index.ts';
+import { notifyWebhooks } from '../../../../util/http/webhooks.ts';
 import { memoize } from '../../../../util/memoize.ts';
 import { incCountValue, isLimitReached } from '../../../global/limits.ts';
 import type {
@@ -495,6 +496,22 @@ export async function ensurePr(
         await platform.updatePr(updatePrConfig);
         logger.info({ pr: existingPr.number, prTitle }, `PR updated`);
         setPrCache(branchName, prBodyFingerprint, true);
+
+        // Send webhook notifications for PR update
+        if (config.prWebhooks?.length && !GlobalConfig.get('dryRun')) {
+          const platformName = GlobalConfig.get('platform') || 'unknown';
+          notifyWebhooks(
+            config,
+            existingPr,
+            platformName,
+            'pull_request.updated',
+          ).catch((err) => {
+            logger.warn(
+              { err, pr: existingPr.number },
+              'Webhook notification failed',
+            );
+          });
+        }
       }
       return {
         type: 'with-pr',
@@ -538,6 +555,23 @@ export async function ensurePr(
         incCountValue('ConcurrentPRs');
         incCountValue('HourlyPRs');
         logger.info({ pr: pr?.number, prTitle }, 'PR created');
+
+        // Send webhook notifications for PR creation
+        if (pr && config.prWebhooks?.length && !GlobalConfig.get('dryRun')) {
+          const platformName = GlobalConfig.get('platform') || 'unknown';
+          const createdPr = pr;
+          notifyWebhooks(
+            config,
+            createdPr,
+            platformName,
+            'pull_request.created',
+          ).catch((err) => {
+            logger.warn(
+              { err, pr: createdPr.number },
+              'Webhook notification failed',
+            );
+          });
+        }
       } catch (err) {
         logger.debug({ err }, 'Pull request creation error');
         if (
